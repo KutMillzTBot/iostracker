@@ -3,118 +3,142 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
-    <title>KutMilzAi · Blood Strike Controller</title>
+    <title>KutMilzAi · Secure Login</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        
-        /* Main App Style (hidden until unlocked) */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
         body {
             background: radial-gradient(circle at 20% 30%, #0b0b18, #030308);
-            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-            padding: 20px 16px 40px;
-            color: #f0f0f0;
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, sans-serif;
             min-height: 100vh;
-        }
-        
-        /* Lock Screen Overlay */
-        .lock-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at 20% 30%, #0b0b18, #030308);
-            backdrop-filter: blur(20px);
-            z-index: 1000;
             display: flex;
             justify-content: center;
             align-items: center;
-            transition: all 0.5s ease;
+            padding: 20px;
         }
-        
-        .lock-card {
-            background: rgba(20, 20, 35, 0.9);
+
+        /* Login Container */
+        .login-container {
+            background: rgba(20, 20, 35, 0.95);
             backdrop-filter: blur(20px);
             border-radius: 48px;
-            padding: 40px 32px;
+            padding: 32px 28px;
             max-width: 400px;
-            width: 90%;
-            border: 1px solid rgba(255, 42, 109, 0.3);
-            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
-            text-align: center;
+            width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+            transition: all 0.3s ease;
         }
-        
-        .lock-card h1 {
-            font-size: 2.2rem;
-            margin-bottom: 8px;
-            background: linear-gradient(135deg, #ff2a6d, #ff6a3d);
+
+        .login-container h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ff2a6d, #ff8c00);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
+            margin-bottom: 8px;
+            text-align: center;
         }
-        
-        .sub {
+
+        .login-container .sub {
+            text-align: center;
             color: #888;
             margin-bottom: 32px;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
         }
-        
-        .lock-card input {
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 0.85rem;
+            color: #ccc;
+        }
+
+        .input-group input {
             width: 100%;
-            padding: 16px 20px;
-            background: #1a1a28;
-            border: 2px solid #2a2a3a;
-            border-radius: 60px;
+            padding: 14px 18px;
+            background: #0b0b14;
+            border: 1px solid #2a2a3a;
+            border-radius: 28px;
             color: white;
             font-size: 1rem;
-            text-align: center;
-            letter-spacing: 2px;
-            font-family: monospace;
-            margin-bottom: 20px;
-            transition: 0.2s;
+            transition: all 0.2s;
         }
-        
-        .lock-card input:focus {
+
+        .input-group input:focus {
             outline: none;
             border-color: #ff2a6d;
-            box-shadow: 0 0 15px rgba(255,42,109,0.3);
+            box-shadow: 0 0 0 2px rgba(255, 42, 109, 0.2);
         }
-        
-        .lock-card button {
+
+        .login-btn {
             width: 100%;
-            padding: 16px;
+            padding: 14px;
             background: linear-gradient(135deg, #ff2a6d, #b0124a);
             border: none;
-            border-radius: 60px;
+            border-radius: 40px;
             color: white;
-            font-size: 1.1rem;
             font-weight: bold;
+            font-size: 1rem;
             cursor: pointer;
-            transition: transform 0.2s;
+            transition: transform 0.1s, opacity 0.2s;
+            margin-top: 16px;
         }
-        
-        .lock-card button:active { transform: scale(0.97); }
-        
-        .error {
-            color: #ff6a6a;
-            margin-top: 20px;
-            font-size: 0.85rem;
-            background: rgba(255,42,109,0.1);
-            padding: 10px;
-            border-radius: 30px;
+
+        .login-btn:active {
+            transform: scale(0.97);
         }
-        
-        .footer {
-            margin-top: 32px;
-            font-size: 0.7rem;
+
+        .login-btn:disabled {
             opacity: 0.5;
+            transform: none;
         }
-        
-        /* Main Dashboard (hidden by default) */
-        .dashboard {
+
+        .error-message {
+            background: rgba(255, 42, 109, 0.2);
+            border-left: 3px solid #ff2a6d;
+            padding: 12px 16px;
+            border-radius: 16px;
+            margin-top: 16px;
+            font-size: 0.85rem;
+            color: #ff6b9d;
             display: none;
         }
-        
+
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Dashboard (hidden initially) */
+        .dashboard {
+            display: none;
+            width: 100%;
+            max-width: 500px;
+        }
+
         .card {
             background: rgba(20, 20, 35, 0.7);
             backdrop-filter: blur(12px);
@@ -124,11 +148,10 @@
             border: 1px solid rgba(255, 255, 255, 0.08);
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
         }
-        
+
         h2 {
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             font-weight: 600;
-            letter-spacing: -0.3px;
             margin-bottom: 18px;
             display: flex;
             align-items: center;
@@ -136,7 +159,7 @@
             border-left: 4px solid #ff2a6d;
             padding-left: 14px;
         }
-        
+
         .status-row {
             display: flex;
             justify-content: space-between;
@@ -145,7 +168,7 @@
             gap: 12px;
             margin-bottom: 20px;
         }
-        
+
         .badge {
             background: #1e1e2c;
             padding: 6px 14px;
@@ -153,7 +176,7 @@
             font-family: monospace;
             font-size: 0.9rem;
         }
-        
+
         .toggle-btn {
             background: linear-gradient(135deg, #ff2a6d, #b0124a);
             border: none;
@@ -163,15 +186,12 @@
             border-radius: 60px;
             font-size: 1rem;
             cursor: pointer;
-            transition: 0.2s;
         }
-        
-        .toggle-btn:active { transform: scale(0.96); }
-        
+
         .control {
             margin-bottom: 20px;
         }
-        
+
         .control-header {
             display: flex;
             justify-content: space-between;
@@ -179,18 +199,15 @@
             font-size: 0.85rem;
             opacity: 0.8;
         }
-        
+
         input[type="range"] {
             width: 100%;
             height: 5px;
             -webkit-appearance: none;
             background: #2c2c3a;
             border-radius: 10px;
-            outline: none;
         }
-        
-        input[type="range"]:focus { outline: none; }
-        
+
         input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
             width: 20px;
@@ -198,10 +215,9 @@
             background: #ff2a6d;
             border-radius: 50%;
             cursor: pointer;
-            box-shadow: 0 0 8px #ff2a6d;
             border: 2px solid white;
         }
-        
+
         select {
             background: #1e1e2c;
             border: 1px solid #3a3a4e;
@@ -210,44 +226,16 @@
             color: white;
             font-size: 0.9rem;
             width: 100%;
-            cursor: pointer;
         }
-        
-        .checkbox-group {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: #13131f;
-            padding: 12px 18px;
-            border-radius: 60px;
-            margin: 12px 0;
-        }
-        
+
         .value-display {
-            font-family: 'JetBrains Mono', monospace;
             background: #00000055;
             padding: 4px 12px;
             border-radius: 30px;
-            font-size: 0.85rem;
-            font-weight: 500;
+            font-family: monospace;
         }
-        
-        .fov-preview {
-            background: #0a0a12;
-            border-radius: 28px;
-            padding: 12px;
-            text-align: center;
-            margin-top: 15px;
-        }
-        
-        canvas {
-            max-width: 100%;
-            border-radius: 20px;
-            background: #111118;
-            box-shadow: inset 0 0 10px #00000033;
-        }
-        
-        .action-btn {
+
+        button {
             background: #2c2c44;
             border: none;
             color: white;
@@ -257,67 +245,53 @@
             width: 100%;
             margin-top: 10px;
             cursor: pointer;
-            transition: 0.2s;
         }
-        
-        .action-btn:active { background: #3f3f60; }
-        
-        .danger-btn {
-            background: #b0124a;
+
+        .logout-btn {
+            background: #2a2a3a;
+            margin-top: 0;
         }
-        
-        .url-box {
-            background: #0a0a12;
-            padding: 12px;
-            border-radius: 20px;
-            word-break: break-all;
-            font-family: monospace;
-            font-size: 0.8rem;
-            margin: 10px 0;
-        }
-        
-        .qr-code {
+
+        .footer {
             text-align: center;
-            margin: 10px 0;
-        }
-        
-        .qr-code img {
-            border-radius: 20px;
+            font-size: 0.7rem;
+            opacity: 0.5;
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
 
-<!-- LOCK SCREEN -->
-<div class="lock-screen" id="lockScreen">
-    <div class="lock-card">
-        <h1>🔐 KUTMILZ AI</h1>
-        <div class="sub">Enter activation token</div>
-        <input type="text" id="tokenInput" placeholder="KUT-XXXX-XXXX-XXXX" autocomplete="off" autofocus>
-        <button onclick="verifyToken()">UNLOCK 🔓</button>
-        <div id="lockError" class="error" style="display:none;"></div>
-        <div class="footer">Secure access · Token required</div>
+<!-- LOGIN FORM -->
+<div id="loginContainer" class="login-container">
+    <h1>⚡ KUTMILZ AI</h1>
+    <div class="sub">Secure Aimbot Controller</div>
+    
+    <div class="input-group">
+        <label>🔗 Backend API URL</label>
+        <input type="text" id="apiUrl" placeholder="http://192.168.1.100:5000" value="http://localhost:5000">
     </div>
+    
+    <div class="input-group">
+        <label>🔑 Authentication Token</label>
+        <input type="password" id="token" placeholder="Enter your token">
+    </div>
+    
+    <button class="login-btn" id="loginBtn">🔓 CONNECT & VERIFY</button>
+    <div id="loginError" class="error-message"></div>
 </div>
 
-<!-- MAIN DASHBOARD -->
-<div class="dashboard" id="dashboard">
+<!-- MAIN DASHBOARD (hidden until login) -->
+<div id="dashboard" class="dashboard">
     <div class="card">
         <h2>⚡ KUTMILZ AI</h2>
         <div class="status-row">
             <span class="badge">🎯 Blood Strike</span>
-            <span class="badge" id="liveStatus">● ACTIVE</span>
+            <span class="badge" id="liveStatus">● CONNECTED</span>
         </div>
         <button class="toggle-btn" id="toggleBtn">🔘 TOGGLE AIMBOT</button>
-        <div style="font-size:0.75rem; margin-top:10px;">Hotkey: <strong>F2</strong> (keyboard)</div>
-    </div>
-
-    <div class="card">
-        <h2>🌍 REMOTE ACCESS</h2>
-        <div class="url-box" id="publicUrlDisplay">No tunnel active</div>
-        <button class="action-btn" id="startTunnelBtn">🚀 Start Cloudflare Tunnel</button>
-        <button class="action-btn danger-btn" id="stopTunnelBtn">🛑 Stop Tunnel</button>
-        <div id="qrContainer" class="qr-code"></div>
+        <button class="logout-btn" id="logoutBtn" style="margin-top:10px; background:#2a2a3a;">🚪 DISCONNECT</button>
+        <div style="font-size:0.75rem; margin-top:10px;">Hotkey: <strong>F7</strong> (keyboard)</div>
     </div>
 
     <div class="card">
@@ -335,142 +309,161 @@
     <div class="card">
         <h2>⚙️ AIM STRENGTH</h2>
         <div class="control">
-            <div class="control-header"><span>🎚️ Aggressiveness (speed)</span><span id="aggVal" class="value-display">0.25</span></div>
-            <input type="range" id="aggressiveness" min="0" max="0.8" step="0.01" value="0.25">
+            <div class="control-header"><span>💪 Global Strength</span><span id="strengthVal" class="value-display">1.0</span></div>
+            <input type="range" id="strength" min="0" max="2.0" step="0.05" value="1.0">
         </div>
         <div class="control">
-            <div class="control-header"><span>🖱️ Max move per frame</span><span id="maxMoveVal" class="value-display">18</span></div>
-            <input type="range" id="maxMove" min="5" max="40" step="1" value="18">
+            <div class="control-header"><span>🎚️ Aggressiveness</span><span id="aggVal" class="value-display">0.35</span></div>
+            <input type="range" id="aggressiveness" min="0" max="1" step="0.01" value="0.35">
         </div>
         <div class="control">
-            <div class="control-header"><span>🎯 Deadzone (px)</span><span id="deadzoneVal" class="value-display">12</span></div>
-            <input type="range" id="deadzone" min="0" max="80" step="2" value="12">
+            <div class="control-header"><span>🖱️ Max move/frame</span><span id="maxMoveVal" class="value-display">35</span></div>
+            <input type="range" id="maxMove" min="5" max="80" step="1" value="35">
         </div>
         <div class="control">
-            <div class="control-header"><span>👁️ Aim FOV (radius)</span><span id="fovVal" class="value-display">250</span></div>
-            <input type="range" id="aimFov" min="50" max="500" step="10" value="250">
+            <div class="control-header"><span>🎯 Deadzone (px)</span><span id="deadzoneVal" class="value-display">10</span></div>
+            <input type="range" id="deadzone" min="0" max="80" step="2" value="10">
+        </div>
+        <div class="control">
+            <div class="control-header"><span>👁️ Aim FOV (radius)</span><span id="fovVal" class="value-display">300</span></div>
+            <input type="range" id="aimFov" min="50" max="500" step="10" value="300">
         </div>
         <div class="control">
             <div class="control-header"><span>🌀 Randomness (jitter)</span><span id="randVal" class="value-display">0.05</span></div>
             <input type="range" id="randomness" min="0" max="0.3" step="0.01" value="0.05">
         </div>
+        <button id="saveBtn">💾 SAVE ALL SETTINGS</button>
+        <button id="testBtn" style="background:#3a86ff;">🔍 TEST LOCK (aim move)</button>
     </div>
 
-    <div class="card">
-        <h2>🖱️ ACTIVATION MODE</h2>
-        <div class="checkbox-group">
-            <span>🔒 Hold to aim</span>
-            <input type="checkbox" id="holdMode">
-        </div>
-        <select id="holdKey">
-            <option value="button_right">🖱️ Right mouse button</option>
-            <option value="button_left">🖱️ Left mouse button</option>
-            <option value="x1">🔘 Mouse side button</option>
-        </select>
-        <button class="action-btn" id="saveBtn">💾 SAVE ALL SETTINGS</button>
-    </div>
-
-    <div class="card">
-        <h2>👁️ FOV VISUALIZER</h2>
-        <div class="fov-preview">
-            <canvas id="fovCanvas" width="300" height="300" style="width:100%; height:auto; max-width:300px; background:#0f0f18; border-radius:50%;"></canvas>
-            <div style="margin-top:12px; font-size:0.75rem;">Green dot = center | Red ring = current FOV</div>
-        </div>
-    </div>
-
-    <div class="footer" style="text-align:center; font-size:0.7rem; opacity:0.5;">
-        KutMilzAi · Remote control via local network
+    <div class="footer">
+        KutMilzAi · Secure Remote Control
     </div>
 </div>
 
 <script>
-    const API_BASE = window.location.origin;
-    let isAuthenticated = false;
-    
-    // Token verification
-    async function verifyToken() {
-        const token = document.getElementById('tokenInput').value.trim().toUpperCase();
-        const errorDiv = document.getElementById('lockError');
+    let apiBase = '';
+    let authToken = '';
+
+    // Helper: make authenticated API calls
+    async function apiCall(endpoint, method = 'GET', body = null) {
+        const url = `${apiBase}${endpoint}`;
+        const headers = {
+            'Content-Type': 'application/json',
+            'X-Auth-Token': authToken
+        };
+        const options = { method, headers };
+        if (body) options.body = JSON.stringify(body);
         
-        if (!token) {
+        try {
+            const response = await fetch(url, options);
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+            return await response.json();
+        } catch (e) {
+            throw new Error(`Connection failed: ${e.message}`);
+        }
+    }
+
+    // Login / Verification
+    document.getElementById('loginBtn').addEventListener('click', async () => {
+        const apiUrl = document.getElementById('apiUrl').value.trim();
+        const token = document.getElementById('token').value.trim();
+        const errorDiv = document.getElementById('loginError');
+        const loginBtn = document.getElementById('loginBtn');
+        
+        // Reset error
+        errorDiv.style.display = 'none';
+        errorDiv.innerHTML = '';
+        
+        // Validate both fields filled
+        if (!apiUrl || !token) {
+            errorDiv.innerHTML = '❌ Both API URL and Token are required';
             errorDiv.style.display = 'block';
-            errorDiv.innerText = '❌ Please enter a token';
             return;
         }
         
+        // Show loading
+        loginBtn.disabled = true;
+        loginBtn.innerHTML = '<span class="spinner"></span> VERIFYING...';
+        
         try {
-            const response = await fetch(`${API_BASE}/verify_token`, {
+            // Step 1: Test backend connection (ping /status endpoint)
+            const testUrl = `${apiUrl}/status`;
+            const testResponse = await fetch(testUrl, { method: 'GET' });
+            if (!testResponse.ok) {
+                throw new Error('Backend not responding');
+            }
+            
+            // Step 2: Verify token by calling /verify endpoint
+            const verifyResponse = await fetch(`${apiUrl}/verify`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ token: token })
             });
             
-            const data = await response.json();
-            
-            if (data.valid) {
-                isAuthenticated = true;
-                localStorage.setItem('auth_token', token);
-                document.getElementById('lockScreen').style.display = 'none';
-                document.getElementById('dashboard').style.display = 'block';
-                loadSettings();
-                startAutoRefresh();
-            } else {
-                errorDiv.style.display = 'block';
-                errorDiv.innerText = '❌ Invalid or expired token!';
+            if (!verifyResponse.ok) {
+                throw new Error('Invalid token');
             }
-        } catch (error) {
+            
+            const verifyData = await verifyResponse.json();
+            if (!verifyData.valid) {
+                throw new Error('Authentication failed');
+            }
+            
+            // Success! Store credentials and show dashboard
+            apiBase = apiUrl;
+            authToken = token;
+            
+            // Hide login, show dashboard
+            document.getElementById('loginContainer').style.display = 'none';
+            document.getElementById('dashboard').style.display = 'block';
+            
+            // Load current settings
+            await loadSettings();
+            
+            // Start status polling
+            startStatusPolling();
+            
+        } catch (err) {
+            errorDiv.innerHTML = `❌ ${err.message}`;
             errorDiv.style.display = 'block';
-            errorDiv.innerText = '❌ Connection error. Make sure the server is running.';
+        } finally {
+            loginBtn.disabled = false;
+            loginBtn.innerHTML = '🔓 CONNECT & VERIFY';
+        }
+    });
+    
+    // Logout
+    document.getElementById('logoutBtn')?.addEventListener('click', () => {
+        apiBase = '';
+        authToken = '';
+        document.getElementById('loginContainer').style.display = 'block';
+        document.getElementById('dashboard').style.display = 'none';
+        document.getElementById('loginContainer').style.opacity = '1';
+    });
+    
+    // Load settings from server
+    async function loadSettings() {
+        try {
+            const data = await apiCall('/status');
+            document.getElementById('strength').value = data.strength || 1.0;
+            document.getElementById('aggressiveness').value = data.aggressiveness || 0.35;
+            document.getElementById('maxMove').value = data.max_move_per_frame || 35;
+            document.getElementById('deadzone').value = data.deadzone || 10;
+            document.getElementById('aimFov').value = data.aim_fov || 300;
+            document.getElementById('randomness').value = data.randomness || 0.05;
+            document.getElementById('aimPoint').value = data.aim_point || 'chest';
+            document.getElementById('liveStatus').innerHTML = data.enabled ? '🟢 ACTIVE' : '⚫ INACTIVE';
+            updateAllDisplays();
+        } catch(e) {
+            console.error('Failed to load settings:', e);
         }
     }
     
-    // Check for saved token on load
-    async function checkSavedToken() {
-        const savedToken = localStorage.getItem('auth_token');
-        if (savedToken) {
-            document.getElementById('tokenInput').value = savedToken;
-            await verifyToken();
-        }
-    }
-    
-    // API Functions
-    async function setSetting(key, value) {
-        if (!isAuthenticated) return;
-        try {
-            await fetch(`${API_BASE}/set`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ key, value })
-            });
-        } catch(e) { console.warn(e); }
-    }
-    
-    async function toggleAimbot() {
-        if (!isAuthenticated) return;
-        await fetch(`${API_BASE}/toggle`, { method: 'POST' });
-        updateStatus();
-    }
-    
-    async function updateStatus() {
-        if (!isAuthenticated) return;
-        try {
-            const res = await fetch(`${API_BASE}/status`);
-            const state = await res.json();
-            document.getElementById('liveStatus').innerHTML = state.enabled ? '🟢 ACTIVE' : '⚫ INACTIVE';
-            document.getElementById('aggressiveness').value = state.aggressiveness;
-            document.getElementById('maxMove').value = state.max_move_per_frame;
-            document.getElementById('deadzone').value = state.deadzone;
-            document.getElementById('aimFov').value = state.aim_fov;
-            document.getElementById('randomness').value = state.randomness;
-            document.getElementById('aimPoint').value = state.aim_point;
-            document.getElementById('holdMode').checked = state.hold_to_aim;
-            document.getElementById('holdKey').value = state.hold_key;
-            updateDisplays();
-            drawFovCircle(parseInt(state.aim_fov));
-        } catch(e) {}
-    }
-    
-    function updateDisplays() {
+    function updateAllDisplays() {
+        document.getElementById('strengthVal').innerText = document.getElementById('strength').value;
         document.getElementById('aggVal').innerText = document.getElementById('aggressiveness').value;
         document.getElementById('maxMoveVal').innerText = document.getElementById('maxMove').value;
         document.getElementById('deadzoneVal').innerText = document.getElementById('deadzone').value;
@@ -478,113 +471,86 @@
         document.getElementById('randVal').innerText = document.getElementById('randomness').value;
     }
     
-    function drawFovCircle(fovPx) {
-        const canvas = document.getElementById('fovCanvas');
-        const ctx = canvas.getContext('2d');
-        const size = canvas.width;
-        const center = size/2;
-        let radius = Math.min(130, (fovPx / 500) * 130);
-        ctx.clearRect(0, 0, size, size);
-        ctx.beginPath();
-        ctx.arc(center, center, radius, 0, 2*Math.PI);
-        ctx.strokeStyle = '#ff2a6d';
-        ctx.lineWidth = 2;
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.arc(center, center, 4, 0, 2*Math.PI);
-        ctx.fillStyle = '#2ecc71';
-        ctx.fill();
-        ctx.fillStyle = '#aaa';
-        ctx.font = '10px monospace';
-        ctx.fillText(`${fovPx}px`, center-15, center-10);
+    async function setSetting(key, value) {
+        try {
+            await apiCall('/set', 'POST', { key, value });
+        } catch(e) { console.error(e); }
     }
     
-    async function loadSettings() {
-        await updateStatus();
+    async function toggleAimbot() {
+        try {
+            await apiCall('/toggle', 'POST');
+            const status = await apiCall('/status');
+            document.getElementById('liveStatus').innerHTML = status.enabled ? '🟢 ACTIVE' : '⚫ INACTIVE';
+        } catch(e) { console.error(e); }
     }
     
-    async function startTunnel() {
-        const res = await fetch('/start_tunnel', { method: 'POST' });
-        const data = await res.json();
-        if(data.url) {
-            document.getElementById('publicUrlDisplay').innerText = data.url;
-            const qrDiv = document.getElementById('qrContainer');
-            qrDiv.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(data.url)}" style="border-radius:20px;">`;
-        }
+    async function testLock() {
+        try {
+            await apiCall('/test', 'POST');
+        } catch(e) { alert('Test failed: ' + e.message); }
     }
     
-    async function stopTunnel() {
-        await fetch('/stop_tunnel', { method: 'POST' });
-        document.getElementById('publicUrlDisplay').innerText = "No tunnel active";
-        document.getElementById('qrContainer').innerHTML = "";
-    }
-    
-    function saveAllSettings() {
+    async function saveAllSettings() {
         const settings = {
+            strength: parseFloat(document.getElementById('strength').value),
             aggressiveness: parseFloat(document.getElementById('aggressiveness').value),
             max_move_per_frame: parseInt(document.getElementById('maxMove').value),
             deadzone: parseInt(document.getElementById('deadzone').value),
             aim_fov: parseInt(document.getElementById('aimFov').value),
             randomness: parseFloat(document.getElementById('randomness').value),
-            aim_point: document.getElementById('aimPoint').value,
-            hold_to_aim: document.getElementById('holdMode').checked,
-            hold_key: document.getElementById('holdKey').value
+            aim_point: document.getElementById('aimPoint').value
         };
-        Promise.all(Object.entries(settings).map(([k,v]) => setSetting(k, v)))
-            .then(() => alert('✅ Settings saved!'))
-            .catch(() => alert('❌ Error saving'));
+        try {
+            await Promise.all(Object.entries(settings).map(([k,v]) => setSetting(k, v)));
+            alert('✅ Settings saved');
+        } catch(e) { alert('❌ Save failed'); }
     }
     
-    function startAutoRefresh() {
-        setInterval(updateStatus, 3000);
+    let statusInterval = null;
+    function startStatusPolling() {
+        if (statusInterval) clearInterval(statusInterval);
+        statusInterval = setInterval(async () => {
+            try {
+                const status = await apiCall('/status');
+                document.getElementById('liveStatus').innerHTML = status.enabled ? '🟢 ACTIVE' : '⚫ INACTIVE';
+            } catch(e) { /* ignore */ }
+        }, 3000);
     }
     
-    // Event Listeners
-    document.getElementById('aggressiveness').addEventListener('input', (e) => {
-        document.getElementById('aggVal').innerText = e.target.value;
-        setSetting('aggressiveness', parseFloat(e.target.value));
-    });
-    document.getElementById('maxMove').addEventListener('input', (e) => {
-        document.getElementById('maxMoveVal').innerText = e.target.value;
-        setSetting('max_move_per_frame', parseInt(e.target.value));
-    });
-    document.getElementById('deadzone').addEventListener('input', (e) => {
-        document.getElementById('deadzoneVal').innerText = e.target.value;
-        setSetting('deadzone', parseInt(e.target.value));
-    });
-    document.getElementById('aimFov').addEventListener('input', (e) => {
-        let val = parseInt(e.target.value);
-        document.getElementById('fovVal').innerText = val;
-        setSetting('aim_fov', val);
-        drawFovCircle(val);
-    });
-    document.getElementById('randomness').addEventListener('input', (e) => {
-        document.getElementById('randVal').innerText = e.target.value;
-        setSetting('randomness', parseFloat(e.target.value));
-    });
-    document.getElementById('aimPoint').addEventListener('change', (e) => {
-        setSetting('aim_point', e.target.value);
-    });
-    document.getElementById('holdMode').addEventListener('change', (e) => {
-        setSetting('hold_to_aim', e.target.checked);
-    });
-    document.getElementById('holdKey').addEventListener('change', (e) => {
-        setSetting('hold_key', e.target.value);
-    });
-    document.getElementById('toggleBtn').addEventListener('click', toggleAimbot);
-    document.getElementById('saveBtn').addEventListener('click', saveAllSettings);
-    document.getElementById('startTunnelBtn').addEventListener('click', startTunnel);
-    document.getElementById('stopTunnelBtn').addEventListener('click', stopTunnel);
-    
-    // Allow Enter key to submit token
-    document.getElementById('tokenInput').addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            verifyToken();
-        }
-    });
-    
-    // Check for saved token on page load
-    checkSavedToken();
+    // Event listeners for dashboard controls
+    if (document.getElementById('strength')) {
+        document.getElementById('strength').addEventListener('input', (e) => {
+            document.getElementById('strengthVal').innerText = e.target.value;
+            setSetting('strength', parseFloat(e.target.value));
+        });
+        document.getElementById('aggressiveness').addEventListener('input', (e) => {
+            document.getElementById('aggVal').innerText = e.target.value;
+            setSetting('aggressiveness', parseFloat(e.target.value));
+        });
+        document.getElementById('maxMove').addEventListener('input', (e) => {
+            document.getElementById('maxMoveVal').innerText = e.target.value;
+            setSetting('max_move_per_frame', parseInt(e.target.value));
+        });
+        document.getElementById('deadzone').addEventListener('input', (e) => {
+            document.getElementById('deadzoneVal').innerText = e.target.value;
+            setSetting('deadzone', parseInt(e.target.value));
+        });
+        document.getElementById('aimFov').addEventListener('input', (e) => {
+            document.getElementById('fovVal').innerText = e.target.value;
+            setSetting('aim_fov', parseInt(e.target.value));
+        });
+        document.getElementById('randomness').addEventListener('input', (e) => {
+            document.getElementById('randVal').innerText = e.target.value;
+            setSetting('randomness', parseFloat(e.target.value));
+        });
+        document.getElementById('aimPoint').addEventListener('change', (e) => {
+            setSetting('aim_point', e.target.value);
+        });
+        document.getElementById('toggleBtn').addEventListener('click', toggleAimbot);
+        document.getElementById('saveBtn').addEventListener('click', saveAllSettings);
+        document.getElementById('testBtn').addEventListener('click', testLock);
+    }
 </script>
 </body>
 </html>
