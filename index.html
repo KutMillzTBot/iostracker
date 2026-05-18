@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+    <title>KutMilzAi · Blood Strike Controller</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: radial-gradient(circle at 20% 30%, #0b0b18, #030308);
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, sans-serif;
+            padding: 20px 16px 40px;
+            color: #f0f0f0;
+        }
+
+        /* glassmorphism cards */
+        .card {
+            background: rgba(20, 20, 35, 0.7);
+            backdrop-filter: blur(12px);
+            border-radius: 32px;
+            padding: 20px 22px;
+            margin-bottom: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            transition: all 0.2s ease;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            letter-spacing: -0.3px;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-left: 4px solid #ff2a6d;
+            padding-left: 14px;
+        }
+
+        h2 i {
+            font-size: 1.3rem;
+        }
+
+        .status-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .badge {
+            background: #1e1e2c;
+            padding: 6px 14px;
+            border-radius: 40px;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+
+        .toggle-btn {
+            background: linear-gradient(135deg, #ff2a6d, #b0124a);
+            border: none;
+            color: white;
+            font-weight: bold;
+            padding: 10px 24px;
+            border-radius: 60px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 2px 8px rgba(255, 42, 109, 0.3);
+        }
+
+        .toggle-btn:active { transform: scale(0.96); }
+
+        .control {
+            margin-bottom: 20px;
+        }
+
+        .control-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+            opacity: 0.8;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 5px;
+            -webkit-appearance: none;
+            background: #2c2c3a;
+            border-radius: 10px;
+            outline: none;
+        }
+
+        input[type="range"]:focus { outline: none; }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #ff2a6d;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 8px #ff2a6d;
+            border: 2px solid white;
+        }
+
+        select, .select-styled {
+            background: #1e1e2c;
+            border: 1px solid #3a3a4e;
+            border-radius: 40px;
+            padding: 10px 18px;
+            color: white;
+            font-size: 0.9rem;
+            width: 100%;
+            cursor: pointer;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #13131f;
+            padding: 12px 18px;
+            border-radius: 60px;
+            margin: 12px 0;
+        }
+
+        .value-display {
+            font-family: 'JetBrains Mono', monospace;
+            background: #00000055;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .fov-preview {
+            background: #0a0a12;
+            border-radius: 28px;
+            padding: 12px;
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        canvas {
+            max-width: 100%;
+            border-radius: 20px;
+            background: #111118;
+            box-shadow: inset 0 0 10px #00000033;
+        }
+
+        button {
+            background: #2c2c44;
+            border: none;
+            color: white;
+            padding: 12px;
+            border-radius: 40px;
+            font-weight: 600;
+            width: 100%;
+            margin-top: 10px;
+            transition: 0.2s;
+        }
+
+        button:active { background: #3f3f60; }
+
+        hr {
+            border-color: #2a2a3a;
+            margin: 16px 0;
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 0.7rem;
+            opacity: 0.5;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>⚡ KUTMILZ AI</h2>
+    <div class="status-row">
+        <span class="badge">🎯 Blood Strike</span>
+        <span class="badge" id="liveStatus">● ACTIVE</span>
+    </div>
+    <button class="toggle-btn" id="toggleBtn">🔘 TOGGLE AIMBOT</button>
+    <div style="font-size:0.75rem; margin-top:10px;">Hotkey: <strong id="hotkeyDisplay">F2</strong> (keyboard)</div>
+</div>
+
+<div class="card">
+    <h2>🎯 LOCK POINT</h2>
+    <select id="aimPoint">
+        <option value="head">🔴 Head (snap)</option>
+        <option value="smoothhead">✨ Head (smooth)</option>
+        <option value="chest">🟠 Chest (snap)</option>
+        <option value="smoothchest">🌀 Chest (smooth)</option>
+        <option value="leg">🟢 Leg (snap)</option>
+        <option value="smoothleg">🌊 Leg (smooth)</option>
+    </select>
+</div>
+
+<div class="card">
+    <h2>⚙️ AIM STRENGTH</h2>
+    <div class="control">
+        <div class="control-header"><span>🎚️ Aggressiveness (speed)</span><span id="aggVal" class="value-display">0.25</span></div>
+        <input type="range" id="aggressiveness" min="0" max="0.8" step="0.01" value="0.25">
+    </div>
+    <div class="control">
+        <div class="control-header"><span>🖱️ Max move per frame</span><span id="maxMoveVal" class="value-display">18</span></div>
+        <input type="range" id="maxMove" min="5" max="40" step="1" value="18">
+    </div>
+    <div class="control">
+        <div class="control-header"><span>🎯 Deadzone (px)</span><span id="deadzoneVal" class="value-display">12</span></div>
+        <input type="range" id="deadzone" min="0" max="80" step="2" value="12">
+    </div>
+    <div class="control">
+        <div class="control-header"><span>👁️ Aim FOV (radius)</span><span id="fovVal" class="value-display">250</span></div>
+        <input type="range" id="aimFov" min="50" max="500" step="10" value="250">
+    </div>
+    <div class="control">
+        <div class="control-header"><span>🌀 Randomness (jitter)</span><span id="randVal" class="value-display">0.05</span></div>
+        <input type="range" id="randomness" min="0" max="0.3" step="0.01" value="0.05">
+    </div>
+</div>
+
+<div class="card">
+    <h2>🖱️ ACTIVATION MODE</h2>
+    <div class="checkbox-group">
+        <span>🔒 Hold to aim</span>
+        <input type="checkbox" id="holdMode">
+    </div>
+    <select id="holdKey">
+        <option value="button_right">🖱️ Right mouse button</option>
+        <option value="button_left">🖱️ Left mouse button</option>
+        <option value="x1">🔘 Mouse side button</option>
+    </select>
+    <button id="saveBtn">💾 SAVE ALL SETTINGS</button>
+</div>
+
+<div class="card">
+    <h2>👁️ FOV VISUALIZER</h2>
+    <div class="fov-preview">
+        <canvas id="fovCanvas" width="300" height="300" style="width:100%; height:auto; max-width:300px; background:#0f0f18; border-radius:50%;"></canvas>
+        <div style="margin-top:12px; font-size:0.75rem;">Green dot = center | Red ring = current FOV</div>
+    </div>
+</div>
+
+<div class="footer">
+    KutMilzAi · Remote control via local network
+</div>
+
+<script>
+    // ---- API helpers ----
+    const API_BASE = window.location.origin;  // uses same host/port as Flask
+    async function setSetting(key, value) {
+        try {
+            await fetch(`${API_BASE}/set`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ key, value })
+            });
+        } catch(e) { console.warn(e); }
+    }
+
+    async function toggleAimbot() {
+        await fetch(`${API_BASE}/toggle`, { method: 'POST' });
+        updateUIFromState();
+    }
+
+    async function fetchCurrentState() {
+        // We'll read from the server /status endpoint (we need to add it in app.py)
+        // If not available, we rely on local storage and optimistic updates.
+        // But to make it perfect, we'll also read from /status if exists, else use stored values.
+        try {
+            const res = await fetch(`${API_BASE}/status`);
+            if (res.ok) {
+                const data = await res.json();
+                applyStateToUI(data);
+                return;
+            }
+        } catch(e) { /* fallback to local storage */ }
+        // fallback: load from localStorage last known
+        loadFromLocalStorage();
+    }
+
+    function applyStateToUI(state) {
+        document.getElementById('aggressiveness').value = state.aggressiveness;
+        document.getElementById('maxMove').value = state.max_move_per_frame;
+        document.getElementById('deadzone').value = state.deadzone;
+        document.getElementById('aimFov').value = state.aim_fov;
+        document.getElementById('randomness').value = state.randomness;
+        document.getElementById('aimPoint').value = state.aim_point;
+        document.getElementById('holdMode').checked = state.hold_to_aim;
+        document.getElementById('holdKey').value = state.hold_key;
+        document.getElementById('liveStatus').innerHTML = state.enabled ? '🟢 ACTIVE' : '⚫ INACTIVE';
+        updateAllDisplays();
+        drawFovCircle(parseInt(state.aim_fov));
+    }
+
+    function updateAllDisplays() {
+        document.getElementById('aggVal').innerText = document.getElementById('aggressiveness').value;
+        document.getElementById('maxMoveVal').innerText = document.getElementById('maxMove').value;
+        document.getElementById('deadzoneVal').innerText = document.getElementById('deadzone').value;
+        document.getElementById('fovVal').innerText = document.getElementById('aimFov').value;
+        document.getElementById('randVal').innerText = document.getElementById('randomness').value;
+        drawFovCircle(parseInt(document.getElementById('aimFov').value));
+    }
+
+    function drawFovCircle(fovPx) {
+        const canvas = document.getElementById('fovCanvas');
+        const ctx = canvas.getContext('2d');
+        const size = canvas.width;
+        const center = size/2;
+        // map FOV (max 500px) to canvas radius (max 130px)
+        let radius = Math.min(130, (fovPx / 500) * 130);
+        ctx.clearRect(0, 0, size, size);
+        ctx.beginPath();
+        ctx.arc(center, center, radius, 0, 2*Math.PI);
+        ctx.strokeStyle = '#ff2a6d';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(center, center, 4, 0, 2*Math.PI);
+        ctx.fillStyle = '#2ecc71';
+        ctx.fill();
+        ctx.fillStyle = '#aaa';
+        ctx.font = '10px monospace';
+        ctx.fillText(`${fovPx}px`, center-15, center-10);
+    }
+
+    function saveAllSettings() {
+        const settings = {
+            aggressiveness: parseFloat(document.getElementById('aggressiveness').value),
+            max_move_per_frame: parseInt(document.getElementById('maxMove').value),
+            deadzone: parseInt(document.getElementById('deadzone').value),
+            aim_fov: parseInt(document.getElementById('aimFov').value),
+            randomness: parseFloat(document.getElementById('randomness').value),
+            aim_point: document.getElementById('aimPoint').value,
+            hold_to_aim: document.getElementById('holdMode').checked,
+            hold_key: document.getElementById('holdKey').value
+        };
+        // Send each
+        Promise.all(Object.entries(settings).map(([k,v]) => setSetting(k, v)))
+            .then(() => {
+                // also save locally
+                localStorage.setItem('kutmilz_settings', JSON.stringify(settings));
+                alert('✅ Settings saved & applied');
+            })
+            .catch(() => alert('❌ Error saving'));
+    }
+
+    function loadFromLocalStorage() {
+        const saved = localStorage.getItem('kutmilz_settings');
+        if (saved) {
+            try {
+                const s = JSON.parse(saved);
+                document.getElementById('aggressiveness').value = s.aggressiveness;
+                document.getElementById('maxMove').value = s.max_move_per_frame;
+                document.getElementById('deadzone').value = s.deadzone;
+                document.getElementById('aimFov').value = s.aim_fov;
+                document.getElementById('randomness').value = s.randomness;
+                document.getElementById('aimPoint').value = s.aim_point;
+                document.getElementById('holdMode').checked = s.hold_to_aim;
+                document.getElementById('holdKey').value = s.hold_key;
+                updateAllDisplays();
+            } catch(e) {}
+        }
+    }
+
+    function updateUIFromState() {
+        // just a placeholder to reload enabled status
+        fetch(`${API_BASE}/status`).then(res => res.json()).then(state => {
+            document.getElementById('liveStatus').innerHTML = state.enabled ? '🟢 ACTIVE' : '⚫ INACTIVE';
+        }).catch(()=>{});
+    }
+
+    // ---- Event listeners ----
+    document.getElementById('aggressiveness').addEventListener('input', (e) => {
+        document.getElementById('aggVal').innerText = e.target.value;
+        setSetting('aggressiveness', parseFloat(e.target.value));
+    });
+    document.getElementById('maxMove').addEventListener('input', (e) => {
+        document.getElementById('maxMoveVal').innerText = e.target.value;
+        setSetting('max_move_per_frame', parseInt(e.target.value));
+    });
+    document.getElementById('deadzone').addEventListener('input', (e) => {
+        document.getElementById('deadzoneVal').innerText = e.target.value;
+        setSetting('deadzone', parseInt(e.target.value));
+    });
+    document.getElementById('aimFov').addEventListener('input', (e) => {
+        const val = parseInt(e.target.value);
+        document.getElementById('fovVal').innerText = val;
+        setSetting('aim_fov', val);
+        drawFovCircle(val);
+    });
+    document.getElementById('randomness').addEventListener('input', (e) => {
+        document.getElementById('randVal').innerText = e.target.value;
+        setSetting('randomness', parseFloat(e.target.value));
+    });
+    document.getElementById('aimPoint').addEventListener('change', (e) => {
+        setSetting('aim_point', e.target.value);
+    });
+    document.getElementById('holdMode').addEventListener('change', (e) => {
+        setSetting('hold_to_aim', e.target.checked);
+    });
+    document.getElementById('holdKey').addEventListener('change', (e) => {
+        setSetting('hold_key', e.target.value);
+    });
+    document.getElementById('toggleBtn').addEventListener('click', toggleAimbot);
+    document.getElementById('saveBtn').addEventListener('click', saveAllSettings);
+
+    // Initial load
+    fetchCurrentState();
+    setInterval(() => {
+        // refresh status every 3 seconds
+        fetch(`${API_BASE}/status`).then(res => res.json()).then(state => {
+            document.getElementById('liveStatus').innerHTML = state.enabled ? '🟢 ACTIVE' : '⚫ INACTIVE';
+        }).catch(()=>{});
+    }, 3000);
+</script>
+</body>
+</html>
